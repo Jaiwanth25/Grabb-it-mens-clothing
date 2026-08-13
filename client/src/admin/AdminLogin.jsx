@@ -22,7 +22,17 @@ const AdminLogin = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
-      const data = await res.json();
+
+      const contentType = res.headers.get('content-type');
+      let data = {};
+
+      if (contentType && contentType.includes('application/json')) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        throw new Error(`Server Connection Error (${res.status}). Please ensure backend API is running.`);
+      }
+
       if (!res.ok) throw new Error(data.error || 'Failed to login');
 
       if (data.user.role !== 'admin') {
@@ -46,7 +56,7 @@ const AdminLogin = () => {
         <p style={{ color: '#666', fontSize: '0.85rem' }}>Protected Administrative Access for GRABB-IT Store.</p>
       </div>
 
-      <form onSubmit={handleSubmit} style={{ backgroundColor: '#ffffff', border: '2px solid #111', padding: '2rem' }}>
+      <form onSubmit={handleSubmit} style={{ backgroundColor: '#ffffff', border: '2px solid #111', padding: '2rem', borderRadius: '12px' }}>
         <div className="form-group">
           <label className="form-label">Admin Email</label>
           <input
@@ -69,13 +79,17 @@ const AdminLogin = () => {
           />
         </div>
 
-        {error && <div style={{ color: '#c62828', fontSize: '0.85rem', fontWeight: 700, marginBottom: '1rem' }}>{error}</div>}
+        {error && (
+          <div style={{ backgroundColor: '#ffebee', color: '#c62828', padding: '0.75rem', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 700, marginBottom: '1rem' }}>
+            {error}
+          </div>
+        )}
 
         <button type="submit" className="btn-primary" style={{ width: '100%', padding: '0.9rem' }} disabled={loading}>
           {loading ? 'AUTHENTICATING...' : 'LOGIN TO ADMIN PANEL'} <ArrowRight size={16} />
         </button>
 
-        <div style={{ backgroundColor: '#f5f5f5', padding: '0.75rem', marginTop: '1.5rem', fontSize: '0.75rem', border: '1px dashed #999' }}>
+        <div style={{ backgroundColor: '#f5f5f5', padding: '0.75rem', marginTop: '1.5rem', fontSize: '0.75rem', border: '1px dashed #999', borderRadius: '8px' }}>
           <strong>Default Admin Credentials:</strong><br />
           Email: admin@grabb-it.com<br />
           Password: Admin@123456

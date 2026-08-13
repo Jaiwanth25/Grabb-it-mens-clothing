@@ -22,7 +22,16 @@ export const Login = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
-      const data = await res.json();
+
+      const contentType = res.headers.get('content-type');
+      let data = {};
+      if (contentType && contentType.includes('application/json')) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        throw new Error(`Server Connection Error (${res.status}). Please check API endpoint.`);
+      }
+
       if (!res.ok) throw new Error(data.error || 'Failed to login');
 
       login(data.user, data.token);
@@ -47,7 +56,7 @@ export const Login = () => {
         <p style={{ color: '#666', fontSize: '0.85rem' }}>Access your orders, wishlist, and exclusive drops.</p>
       </div>
 
-      <form onSubmit={handleSubmit} style={{ backgroundColor: '#ffffff', border: '1px solid #e5e5e5', padding: '2rem' }}>
+      <form onSubmit={handleSubmit} style={{ backgroundColor: '#ffffff', border: '1px solid #e5e5e5', padding: '2rem', borderRadius: '12px' }}>
         <div className="form-group">
           <label className="form-label">Email Address</label>
           <input
@@ -72,7 +81,11 @@ export const Login = () => {
           />
         </div>
 
-        {error && <div style={{ color: '#c62828', fontSize: '0.85rem', fontWeight: 700, marginBottom: '1rem' }}>{error}</div>}
+        {error && (
+          <div style={{ backgroundColor: '#ffebee', color: '#c62828', padding: '0.75rem', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 700, marginBottom: '1rem' }}>
+            {error}
+          </div>
+        )}
 
         <button type="submit" className="btn-primary" style={{ width: '100%', padding: '0.9rem' }} disabled={loading}>
           {loading ? 'SIGNING IN...' : 'SIGN IN'} <ArrowRight size={16} />
@@ -82,7 +95,7 @@ export const Login = () => {
           Don't have an account? <Link to="/register" style={{ fontWeight: 800, color: '#111' }}>Register Here</Link>
         </div>
 
-        <div style={{ backgroundColor: '#f5f5f5', padding: '0.75rem', marginTop: '1.5rem', fontSize: '0.75rem', border: '1px dashed #ccc' }}>
+        <div style={{ backgroundColor: '#f5f5f5', padding: '0.75rem', marginTop: '1.5rem', fontSize: '0.75rem', border: '1px dashed #ccc', borderRadius: '8px' }}>
           <strong>Sample Customer Login:</strong><br />
           Email: customer@grabb-it.com | Password: Customer@123
         </div>
@@ -112,7 +125,16 @@ export const Register = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password, phone })
       });
-      const data = await res.json();
+
+      const contentType = res.headers.get('content-type');
+      let data = {};
+      if (contentType && contentType.includes('application/json')) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        throw new Error(`Server Connection Error (${res.status}). Please check API endpoint.`);
+      }
+
       if (!res.ok) throw new Error(data.error || 'Failed to register');
 
       login(data.user, data.token);
@@ -132,7 +154,7 @@ export const Register = () => {
         <p style={{ color: '#666', fontSize: '0.85rem' }}>Join GRABB-IT for fast checkout and reward perks.</p>
       </div>
 
-      <form onSubmit={handleSubmit} style={{ backgroundColor: '#ffffff', border: '1px solid #e5e5e5', padding: '2rem' }}>
+      <form onSubmit={handleSubmit} style={{ backgroundColor: '#ffffff', border: '1px solid #e5e5e5', padding: '2rem', borderRadius: '12px' }}>
         <div className="form-group">
           <label className="form-label">Full Name</label>
           <input type="text" className="form-input" placeholder="Alex Morgan" value={name} onChange={e => setName(e.target.value)} required />
@@ -153,7 +175,11 @@ export const Register = () => {
           <input type="password" className="form-input" placeholder="At least 6 characters" value={password} onChange={e => setPassword(e.target.value)} required />
         </div>
 
-        {error && <div style={{ color: '#c62828', fontSize: '0.85rem', fontWeight: 700, marginBottom: '1rem' }}>{error}</div>}
+        {error && (
+          <div style={{ backgroundColor: '#ffebee', color: '#c62828', padding: '0.75rem', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 700, marginBottom: '1rem' }}>
+            {error}
+          </div>
+        )}
 
         <button type="submit" className="btn-primary" style={{ width: '100%', padding: '0.9rem' }} disabled={loading}>
           {loading ? 'CREATING ACCOUNT...' : 'CREATE ACCOUNT'} <ArrowRight size={16} />
