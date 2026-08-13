@@ -39,6 +39,11 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/admin', adminRoutes);
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', time: new Date().toISOString() });
+});
+
 // Serve client static build in production if available
 const clientBuildPath = path.join(__dirname, '../client/dist');
 app.use(express.static(clientBuildPath));
@@ -63,10 +68,15 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`=================================`);
-  console.log(`GRABB-IT Backend Server Active`);
-  console.log(`Port: ${PORT}`);
-  console.log(`API Root: http://localhost:${PORT}/api`);
-  console.log(`=================================`);
-});
+// Only listen on port if executed directly (e.g. node server/server.js), not inside Vercel serverless functions
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`=================================`);
+    console.log(`GRABB-IT Backend Server Active`);
+    console.log(`Port: ${PORT}`);
+    console.log(`API Root: http://localhost:${PORT}/api`);
+    console.log(`=================================`);
+  });
+}
+
+module.exports = app;
